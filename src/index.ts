@@ -15,9 +15,9 @@ import logger from "./config/winston";
 
 const app = express();
 
-app.use(cors()); // Permite que o express entenda requisições de outros domínios
+app.use(cors()); 
 
-app.use(express.json()); // Permite que o express entenda JSON
+app.use(express.json()); 
 
 app.use("/users", userRouter);
 app.use("/login", authRouter);
@@ -33,10 +33,10 @@ app.use(handleError);
 
 AppDataSource.initialize()
   .then(() => {
-    app.listen(process.env.PORT, () => {
-      logger.info(
-        `O servidor está rodando em http://localhost:${process.env.PORT}`
-      );
+    const port = Number(process.env.PORT) || 5432; 
+    app.listen(port, () => {
+      logger.info(`O servidor está rodando em http://localhost:${port}`);
     });
+    
   })
   .catch((error) => console.log(error));

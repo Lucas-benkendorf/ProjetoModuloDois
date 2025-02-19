@@ -1,0 +1,11 @@
+[19-02-2025 04:40:04.516 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 04:52:01.654 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 04:53:55.770 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 04:53:58.352 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 04:54:05.979 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 04:54:10.775 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 04:56:11.405 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 04:57:47.843 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 05:00:37.410 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 05:00:47.749 PM] info: 	O servidor está rodando em http://localhost:5432
+[19-02-2025 05:00:55.406 PM] info: 	O servidor está rodando em http://localhost:5432
