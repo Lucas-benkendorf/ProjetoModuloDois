@@ -1,8 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
+  BaseEntity,
+} from "typeorm";
 import { User } from "./User";
 
 @Entity("branches")
-export class Branch {
+export class Branch extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -16,9 +25,13 @@ export class Branch {
   @JoinColumn({ name: "user_id" })
   user: User;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
   updated_at: Date;
 }

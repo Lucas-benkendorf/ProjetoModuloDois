@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+  BaseEntity,
+} from "typeorm";
 import { Driver } from "./Driver";
 import { Branch } from "./Branch";
 
@@ -9,7 +17,7 @@ export enum UserProfile {
 }
 
 @Entity("users")
-export class User {
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
@@ -28,15 +36,19 @@ export class User {
   @Column({ type: "boolean", default: true })
   status: boolean;
 
-  @CreateDateColumn({ type: "timestamp" })
+  @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 
-  @UpdateDateColumn({ type: "timestamp" })
+  @UpdateDateColumn({
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
   updated_at: Date;
 
   @OneToOne(() => Driver, (driver) => driver.user)
-  driver?: Driver;
+  driver: Driver;
 
   @OneToOne(() => Branch, (branch) => branch.user)
-  branch?: Branch;
+  branch: Branch;
 }
