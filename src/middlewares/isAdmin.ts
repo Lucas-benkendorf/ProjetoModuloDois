@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import { User } from "../entities/User"; // Importe a entidade User
 
 dotenv.config();
 
@@ -15,20 +16,20 @@ declare module "express" {
 
 interface TokenPayload {
   id: string;
-  isAdmin: boolean;
+  profile: string; // Alterado para verificar o perfil do usuário
   iat: number;
   exp: number;
 }
 
-export const isAdmin = (
+export const isAdmin = async (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): Promise<void> => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    res.status(401).json({ error: "Token não fornecido" });
+    res.status(401).json({ error: "Token não fornecido." });
     return;
   }
 
@@ -44,14 +45,21 @@ export const isAdmin = (
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as TokenPayload;
 
-    if (!decoded.isAdmin) {
+    const user = await User.findOne({ where: { id: decoded.id } });
+    if (!user) {
+      res.status(401).json({ error: "Usuário não encontrado." });
+      return;
+    }
+
+
+    if (user.profile !== "ADMIN") {
       res.status(403).json({
         error: "Acesso negado. Apenas administradores podem acessar esta rota.",
       });
       return;
     }
 
-    req.user = { id: decoded.id, isAdmin: decoded.isAdmin };
+    req.user = { id: user.id, isAdmin: user.profile === "ADMIN" };
 
     next();
   } catch (error) {
