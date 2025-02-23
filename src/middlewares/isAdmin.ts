@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { User } from "../entities/User"; // Importe a entidade User
+import { User } from "../entities/User"; 
+import { AppDataSource } from "../data-source"; 
 
 dotenv.config();
 
@@ -16,7 +17,7 @@ declare module "express" {
 
 interface TokenPayload {
   id: string;
-  profile: string; // Alterado para verificar o perfil do usuário
+  profile: string; 
   iat: number;
   exp: number;
 }
@@ -45,12 +46,13 @@ export const isAdmin = async (
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as TokenPayload;
 
-    const user = await User.findOne({ where: { id: decoded.id } });
+    const userRepository = AppDataSource.getRepository(User);
+
+    const user = await userRepository.findOne({ where: { id: decoded.id } });
     if (!user) {
       res.status(401).json({ error: "Usuário não encontrado." });
       return;
     }
-
 
     if (user.profile !== "ADMIN") {
       res.status(403).json({

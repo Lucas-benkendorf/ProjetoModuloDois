@@ -6,20 +6,22 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
-  BaseEntity,
 } from "typeorm";
 import { User } from "./User";
 
 @Entity("drivers")
-export class Driver extends BaseEntity {
+export class Driver {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Column({ type: "varchar", length: 255, nullable: false }) 
+  name: string; 
+
+  @Column({ type: "varchar", length: 30, nullable: false }) 
+  license_number: string; 
+
   @Column({ type: "varchar", length: 255, nullable: true })
   full_address: string;
-
-  @Column({ type: "varchar", length: 30, nullable: false })
-  document: string;
 
   @OneToOne(() => User, (user) => user.driver)
   @JoinColumn({ name: "user_id" })

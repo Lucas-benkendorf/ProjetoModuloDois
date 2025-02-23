@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  BaseEntity,
 } from "typeorm";
 import { Driver } from "./Driver";
 import { Branch } from "./Branch";
@@ -17,14 +16,14 @@ export enum UserProfile {
 }
 
 @Entity("users")
-export class User extends BaseEntity {
+export class User {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
   @Column({ type: "varchar", length: 200, nullable: false })
   name: string;
 
-  @Column({ type: "enum", enum: UserProfile, nullable: false })
+  @Column({ type: "varchar", length: 50, nullable: false, default: UserProfile.ADMIN })
   profile: UserProfile;
 
   @Column({ type: "varchar", length: 150, unique: true, nullable: false })

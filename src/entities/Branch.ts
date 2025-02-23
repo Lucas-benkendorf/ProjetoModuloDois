@@ -6,19 +6,24 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
-  BaseEntity,
 } from "typeorm";
 import { User } from "./User";
 
 @Entity("branches")
-export class Branch extends BaseEntity {
+export class Branch {
   @PrimaryGeneratedColumn("uuid")
   id: string;
 
-  @Column({ type: "varchar", length: 255, nullable: true })
+  @Column({ type: "varchar", length: 255, nullable: false }) 
+  name: string;
+
+  @Column({ type: "varchar", length: 255, nullable: true }) 
+  location: string;
+
+  @Column({ type: "varchar", length: 255, nullable: false }) 
   full_address: string;
 
-  @Column({ type: "varchar", length: 30, nullable: false })
+  @Column({ type: "varchar", length: 30, nullable: false }) 
   document: string;
 
   @OneToOne(() => User, (user) => user.branch)
