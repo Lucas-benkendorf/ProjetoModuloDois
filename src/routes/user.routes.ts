@@ -1,10 +1,16 @@
 import { Router } from "express";
-import { isAdmin } from "../middlewares/isAdmin";
-import { createUser, listUsers } from "../controllers/UserController";
+import { isAdmin } from "../middlewares/isAdmin"; 
+import { createUser, getUserById, listUsers } from "../controllers/UserController"; 
 
-const userRouter = Router();
+const router = Router();
 
-userRouter.post("/", isAdmin, createUser);
-userRouter.get("/", isAdmin, listUsers); 
 
-export default userRouter;
+router.get("/", isAdmin, listUsers);
+
+
+router.get("/:id", isAdmin, getUserById);
+
+
+router.post("/", createUser);
+
+export default router;
