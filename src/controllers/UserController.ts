@@ -3,65 +3,58 @@ import { User } from "../entities/User";
 import { Branch } from "../entities/Branch";
 import { Driver } from "../entities/Driver";
 import bcrypt from "bcrypt";
-import { AppDataSource } from "../data-source"; // Certifique-se de que está importando corretamente
+import { AppDataSource } from "../data-source";
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
     const { name, profile, email, password, license_number } = req.body;
 
-    console.log("Dados recebidos:", { name, profile, email, license_number }); // Log para depuração
+    console.log("Dados recebidos:", { name, profile, email, license_number });
 
-    // Verifique se todos os campos obrigatórios estão presentes
     if (!name || !profile || !email || !password || !license_number) {
-        console.log("Dados incompletos:", { name, profile, email, license_number }); // Log para depuração
+        console.log("Dados incompletos:", { name, profile, email, license_number });
         res.status(400).json({ error: "Dados incorretos ou incompletos no corpo da requisição." });
         return;
     }
 
     try {
-        // Obtenha o repositório da entidade User
         const userRepository = AppDataSource.getRepository(User);
+        console.log("Verificando se o email já está cadastrado:", email);
 
-        // Verifique se o email já está em uso
-        console.log("Verificando se o email já está cadastrado:", email); // Log para depuração
         const existingUser = await userRepository.findOne({ where: { email } });
         if (existingUser) {
-            console.log("Email já cadastrado:", email); // Log para depuração
+            console.log("Email já cadastrado:", email);
             res.status(409).json({ error: "Email já cadastrado." });
             return;
         }
 
-        // Criptografe a senha
-        console.log("Criptografando a senha..."); // Log para depuração
+        console.log("Criptografando a senha...");
         const passwordHash = await bcrypt.hash(password, 10);
 
-        // Crie o novo usuário
-        console.log("Criando novo usuário..."); // Log para depuração
+        console.log("Criando novo usuário...");
         const newUser = userRepository.create({
             name,
             profile,
             email,
             password_hash: passwordHash,
-            status: true, // Definindo o status como true por padrão
+            status: true, 
         });
 
-        // Salve o usuário no banco de dados
-        console.log("Salvando usuário no banco de dados..."); // Log para depuração
+        console.log("Salvando usuário no banco de dados...");
         await userRepository.save(newUser);
-        console.log("Usuário salvo com sucesso:", newUser); // Log para depuração
+        console.log("Usuário salvo com sucesso:", newUser);
 
-        // Crie a entidade relacionada (Branch ou Driver) com base no perfil
         if (profile === "BRANCH") {
-            console.log("Criando Branch..."); // Log para depuração
+            console.log("Criando Branch...");
             const branchRepository = AppDataSource.getRepository(Branch);
             const branch = branchRepository.create({
-                document: license_number, // Usando license_number como document
-                full_address: "Endereço padrão", // Adicione um endereço padrão ou ajuste conforme necessário
+                document: license_number,
+                full_address: "Endereço padrão",
                 user: newUser,
             });
             await branchRepository.save(branch);
-            console.log("Branch salvo com sucesso:", branch); // Log para depuração
+            console.log("Branch salvo com sucesso:", branch);
         } else if (profile === "DRIVER") {
-            console.log("Criando Driver..."); // Log para depuração
+            console.log("Criando Driver...");
             const driverRepository = AppDataSource.getRepository(Driver);
             const driver = driverRepository.create({
                 name,
@@ -69,22 +62,45 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
                 user: newUser,
             });
             await driverRepository.save(driver);
-            console.log("Driver salvo com sucesso:", driver); // Log para depuração
+            console.log("Driver salvo com sucesso:", driver);
         } else if (profile === "ADMIN") {
-            console.log("Perfil ADMIN: Nenhuma entidade relacionada criada."); // Log para depuração
-            // Para o perfil ADMIN, não é necessário criar Branch ou Driver
-            // Apenas salve o usuário
+            console.log("Perfil ADMIN: Nenhuma entidade relacionada criada.");
         } else {
-            console.log("Perfil inválido:", profile); // Log para depuração
+            console.log("Perfil inválido:", profile);
             res.status(400).json({ error: "Perfil inválido." });
             return;
         }
 
-        // Retorne a resposta de sucesso
-        console.log("Usuário criado com sucesso. Retornando resposta..."); // Log para depuração
+        console.log("Usuário criado com sucesso. Retornando resposta...");
         res.status(201).json({ name: newUser.name, profile: newUser.profile });
     } catch (error) {
-        console.error("Erro ao criar usuário:", error); // Log para depuração
+        console.error("Erro ao criar usuário:", error);
+        res.status(500).json({ error: "Erro interno no servidor." });
+    }
+};
+
+export const listUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+        if (!req.user?.isAdmin) {
+            res.status(403).json({ error: "Acesso negado. Apenas administradores podem listar usuários." });
+            return;
+        }
+
+        const { profile } = req.query;
+        const userRepository = AppDataSource.getRepository(User);
+
+        let query = userRepository.createQueryBuilder("user")
+            .select(["user.id", "user.name", "user.status", "user.profile"]);
+
+        if (profile) {
+            query = query.where("user.profile = :profile", { profile });
+        }
+
+        const users = await query.getMany();
+
+        res.status(200).json(users);
+    } catch (error) {
+        console.error("Erro ao listar usuários:", error);
         res.status(500).json({ error: "Erro interno no servidor." });
     }
 };
