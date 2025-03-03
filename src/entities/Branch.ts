@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from "typeorm";
 import { User } from "./User";
+import { Product } from "./Product"; // Importação da entidade Product
 
 @Entity("branches")
 export class Branch {
@@ -29,6 +31,10 @@ export class Branch {
   @OneToOne(() => User, (user) => user.branch)
   @JoinColumn({ name: "user_id" })
   user: User;
+
+  @OneToMany(() => Product, (product) => product.branch, { cascade: true })
+products: Product[];
+
 
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;

@@ -1,27 +1,24 @@
-require("dotenv").config();
-
+import "dotenv/config";
 import "reflect-metadata";
 import express from "express";
-import { AppDataSource } from "./data-source";
-
 import cors from "cors";
+import { AppDataSource } from "./data-source";
 
 import userRouter from "./routes/user.routes";
 import authRouter from "./routes/auth.routes";
+import productRouter from "./routes/product.routes"; 
 
 import { handleError } from "./middlewares/handleError";
 import logger from "./config/winston";
 
 const app = express();
 
-
-
 app.use(cors());
 app.use(express.json());
 
 app.use("/users", userRouter);
 app.use("/login", authRouter);
-
+app.use("/products", productRouter); 
 
 app.get("/env", (req, res) => {
   res.json({
