@@ -23,7 +23,12 @@ export class User {
   @Column({ type: "varchar", length: 200, nullable: false })
   name: string;
 
-  @Column({ type: "varchar", length: 50, nullable: false, default: UserProfile.ADMIN })
+  @Column({
+    type: "varchar",
+    length: 50,
+    nullable: false,
+    default: UserProfile.ADMIN,
+  })
   profile: UserProfile;
 
   @Column({ type: "varchar", length: 150, unique: true, nullable: false })

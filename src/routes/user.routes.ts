@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { createUser, updateUser, listUsers, getUserById, updateUserStatus } from "../controllers/UserController";
+import {
+  createUser,
+  updateUser,
+  listUsers,
+  getUserById,
+  updateUserStatus,
+} from "../controllers/UserController";
 import verifyToken from "../middlewares/auth";
 import { isAdmin } from "../middlewares/isAdmin";
 

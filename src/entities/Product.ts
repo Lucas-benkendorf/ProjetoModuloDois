@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
+  JoinColumn,
+} from "typeorm";
 import { Branch } from "./Branch";
 
 @Entity("products")
@@ -19,6 +27,7 @@ export class Product {
   url_cover?: string;
 
   @ManyToOne(() => Branch, (branch) => branch.products)
+  @JoinColumn({ name: "branch_id" })
   branch: Branch;
 
   @CreateDateColumn()
