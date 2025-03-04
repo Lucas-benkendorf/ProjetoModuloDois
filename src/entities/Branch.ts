@@ -10,6 +10,7 @@ import {
 } from "typeorm";
 import { User } from "./User";
 import { Product } from "./Product";
+import { Movement } from "./Movement"; 
 
 @Entity("branches")
 export class Branch {
@@ -34,6 +35,9 @@ export class Branch {
 
   @OneToMany(() => Product, (product) => product.branch, { cascade: true })
   products: Product[];
+
+  @OneToMany(() => Movement, (movement) => movement.destination_branch) 
+  movements: Movement[];
 
   @CreateDateColumn({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
