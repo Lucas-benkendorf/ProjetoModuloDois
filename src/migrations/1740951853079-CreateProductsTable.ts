@@ -1,15 +1,10 @@
-import {
-  MigrationInterface,
-  QueryRunner,
-  Table,
-  TableForeignKey,
-} from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
-export class CreateDriversTable1700000000003 implements MigrationInterface {
+export class CreateProductsTable1700000000004 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.createTable(
       new Table({
-        name: "drivers",
+        name: "products",
         columns: [
           {
             name: "id",
@@ -21,54 +16,55 @@ export class CreateDriversTable1700000000003 implements MigrationInterface {
           {
             name: "name",
             type: "varchar",
-            length: "255",
+            length: "200",
             isNullable: false,
           },
           {
-            name: "license_number",
-            type: "varchar",
-            length: "30",
+            name: "amount",
+            type: "int",
             isNullable: false,
           },
           {
-            name: "full_address",
+            name: "description",
             type: "varchar",
-            length: "255",
+            length: "200",
+            isNullable: false,
+          },
+          {
+            name: "url_cover",
+            type: "varchar",
+            length: "200",
             isNullable: true,
           },
           {
-            name: "user_id",
+            name: "branch_id",
             type: "uuid",
             isNullable: false,
           },
           {
             name: "created_at",
             type: "timestamp",
-            default: "CURRENT_TIMESTAMP",
+            default: "now()",
           },
           {
             name: "updated_at",
             type: "timestamp",
-            default: "CURRENT_TIMESTAMP",
-            onUpdate: "CURRENT_TIMESTAMP",
+            default: "now()",
           },
         ],
-      }),
-      true
-    );
-
-    await queryRunner.createForeignKey(
-      "drivers",
-      new TableForeignKey({
-        columnNames: ["user_id"],
-        referencedColumnNames: ["id"],
-        referencedTableName: "users",
-        onDelete: "CASCADE",
+        foreignKeys: [
+          {
+            columnNames: ["branch_id"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "branches",
+            onDelete: "CASCADE",
+          },
+        ],
       })
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable("drivers");
+    await queryRunner.dropTable("products");
   }
 }

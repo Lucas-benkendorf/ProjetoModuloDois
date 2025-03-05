@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
-import { User } from "../entities/User"; 
-import { AppDataSource } from "../data-source"; 
+import { User } from "../entities/User";
+import { AppDataSource } from "../data-source";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ declare module "express" {
 
 interface TokenPayload {
   id: string;
-  profile: string; 
+  profile: string;
   iat: number;
   exp: number;
 }
