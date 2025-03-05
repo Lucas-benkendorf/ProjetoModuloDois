@@ -26,7 +26,9 @@ export const createMovement = async (
     });
 
     if (!user || !user.branch) {
-      res.status(403).json({ error: "Usuário não está vinculado a uma filial." });
+      res
+        .status(403)
+        .json({ error: "Usuário não está vinculado a uma filial." });
       return;
     }
 
@@ -44,12 +46,17 @@ export const createMovement = async (
     if (product.branch.id === destination_branch_id) {
       res
         .status(400)
-        .json({ error: "A filial de origem não pode ser a mesma que a filial de destino." });
+        .json({
+          error:
+            "A filial de origem não pode ser a mesma que a filial de destino.",
+        });
       return;
     }
 
     if (product.amount < quantity) {
-      res.status(400).json({ error: "Estoque insuficiente para essa movimentação." });
+      res
+        .status(400)
+        .json({ error: "Estoque insuficiente para essa movimentação." });
       return;
     }
 
@@ -73,13 +80,52 @@ export const createMovement = async (
 
     await movementRepository.save(newMovement);
 
-
     product.amount -= quantity;
     await productRepository.save(product);
 
     res.status(201).json(newMovement);
   } catch (error) {
     console.error("Erro durante a criação da movimentação:", error);
+    res.status(500).json({ error: "Erro interno no servidor." });
+  }
+};
+
+export const listMovements = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { userId } = req as any;
+
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const user = await userRepository.findOne({
+      where: { id: userId },
+      relations: ["branch", "driver"],
+    });
+
+    if (!user) {
+      res.status(404).json({ error: "Usuário não encontrado." });
+      return;
+    }
+
+    if (user.profile !== "BRANCH" && user.profile !== "DRIVER") {
+      res
+        .status(403)
+        .json({
+          error:
+            "Acesso negado. Rota permitida apenas para filiais e motoristas.",
+        });
+      return;
+    }
+
+    const movementRepository = AppDataSource.getRepository(Movement);
+    const movements = await movementRepository.find({
+      relations: ["destination_branch", "product"],
+    });
+
+    res.status(200).json(movements);
+  } catch (error) {
+    console.error("Erro durante a listagem das movimentações:", error);
     res.status(500).json({ error: "Erro interno no servidor." });
   }
 };
